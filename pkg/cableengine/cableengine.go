@@ -148,7 +148,8 @@ func (i *engine) installCableWithNATInfo(rnat *natdiscovery.NATEndpointInfo) err
 		return err
 	}
 
-	for _, active := range activeConnections {
+	for j := range activeConnections {
+		active := &activeConnections[j]
 		klog.V(log.TRACE).Infof("Analyzing currently active connection %q", active.Endpoint.CableName)
 
 		if active.Endpoint.ClusterID != endpoint.Spec.ClusterID {
