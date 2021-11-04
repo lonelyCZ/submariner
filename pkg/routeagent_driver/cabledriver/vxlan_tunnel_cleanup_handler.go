@@ -50,7 +50,11 @@ func (h *vxlanCleanup) TransitionToNonGateway() error {
 
 	link, err := netlink.LinkByName(vxlan.VxlanIface)
 	if err != nil {
-		return nil
+		if errors.Is(err, netlink.LinkNotFoundError{}) {
+			return nil
+		}
+
+		return errors.Wrapf(err, "failed to retrieve the vxlan interface")
 	}
 
 	currentRouteList, err := netlink.RouteList(link, syscall.AF_INET)
@@ -70,7 +74,7 @@ func (h *vxlanCleanup) TransitionToNonGateway() error {
 
 	err = netlink.LinkDel(link)
 	if err != nil {
-		return errors.Wrapf(err, "failed to delete the the vxlan interface")
+		return errors.Wrapf(err, "failed to delete the vxlan interface")
 	}
 
 	return nil
