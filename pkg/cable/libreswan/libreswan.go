@@ -74,7 +74,7 @@ type specification struct {
 const defaultNATTPort = "4500"
 const ipsecSpecEnvVarPrefix = "ce_ipsec"
 
-// NewLibreswan starts an IKE daemon using Libreswan and configures it to manage Submariner's endpoints
+// NewLibreswan starts an IKE daemon using Libreswan and configures it to manage Submariner's endpoints.
 func NewLibreswan(localEndpoint types.SubmarinerEndpoint, localCluster types.SubmarinerCluster) (cable.Driver, error) {
 	ipSecSpec := specification{}
 
@@ -107,7 +107,7 @@ func NewLibreswan(localEndpoint types.SubmarinerEndpoint, localCluster types.Sub
 	}, nil
 }
 
-// GetName returns driver's name
+// GetName returns driver's name.
 func (i *libreswan) GetName() string {
 	return cableDriverName
 }
@@ -237,12 +237,12 @@ func (i *libreswan) refreshConnectionStatus() error {
 	return nil
 }
 
-// GetActiveConnections returns an array of all the active connections
+// GetActiveConnections returns an array of all the active connections.
 func (i *libreswan) GetActiveConnections() ([]subv1.Connection, error) {
 	return i.connections, nil
 }
 
-// GetConnections() returns an array of the existing connections, including status and endpoint info
+// GetConnections() returns an array of the existing connections, including status and endpoint info.
 func (i *libreswan) GetConnections() ([]subv1.Connection, error) {
 	if err := i.refreshConnectionStatus(); err != nil {
 		return []subv1.Connection{}, err
@@ -401,7 +401,7 @@ func (i *libreswan) serverConnectToEndpoint(connectionName string, endpointInfo 
 
 	args = append(args, "--name", connectionName)
 
-	// Left-hand side
+	// Left-hand side.
 	args = append(args, "--id", localEndpointIdentifier)
 	args = append(args, "--host", i.localEndpoint.Spec.PrivateIP)
 	args = append(args, "--client", leftSubnet)
@@ -410,7 +410,7 @@ func (i *libreswan) serverConnectToEndpoint(connectionName string, endpointInfo 
 
 	args = append(args, "--to")
 
-	// Right-hand side
+	// Right-hand side.
 	args = append(args, "--id", remoteEndpointIdentifier)
 	args = append(args, "--host", "%any")
 	args = append(args, "--client", rightSubnet)
@@ -422,13 +422,13 @@ func (i *libreswan) serverConnectToEndpoint(connectionName string, endpointInfo 
 	}
 
 	// NOTE: in this case we don't route or initiate connection, we simply wait for the client
-	// to connect from %any IP, using the right PSK & ID
+	// to connect from %any IP, using the right PSK & ID.
 	return nil
 }
 
 func (i *libreswan) clientConnectToEndpoint(connectionName string, endpointInfo *natdiscovery.NATEndpointInfo,
 	leftSubnet, rightSubnet string, rightNATTPort int32, lsi, rsi int) error {
-	// Identifiers are used for authentication, they’re always the private IPs
+	// Identifiers are used for authentication, they’re always the private IPs.
 	localEndpointIdentifier := fmt.Sprintf("@%s-%d-%d", i.localEndpoint.Spec.PrivateIP, lsi, rsi)
 	remoteEndpointIdentifier := fmt.Sprintf("@%s-%d-%d", endpointInfo.Endpoint.Spec.PrivateIP, rsi, lsi)
 
@@ -555,7 +555,7 @@ func (i *libreswan) runPluto() error {
 	}
 
 	if err := cmd.Start(); err != nil {
-		// Note - Close handles nil receiver
+		// Note - Close handles nil receiver.
 		outputFile.Close()
 		return errors.Wrapf(err, "error starting the Pluto process with args %v", args)
 	}
@@ -565,7 +565,7 @@ func (i *libreswan) runPluto() error {
 		klog.Fatalf("Pluto exited: %v", cmd.Wait())
 	}()
 
-	// Wait up to 5s for the control socket
+	// Wait up to 5s for the control socket.
 	for i := 0; i < 5; i++ {
 		_, err := os.Stat("/run/pluto/pluto.ctl")
 		if err == nil {

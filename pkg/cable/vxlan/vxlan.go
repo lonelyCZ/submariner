@@ -122,7 +122,7 @@ func (v *vxlan) createVxlanInterface(activeEndPoint string, port int) error {
 			v.localEndpoint.Spec.Hostname)
 	}
 
-	// Derive the MTU based on the default outgoing interface
+	// Derive the MTU based on the default outgoing interface.
 	vxlanMtu := defaultHostIface.MTU - VxlanOverhead
 
 	attrs := &vxlanAttributes{
@@ -190,7 +190,7 @@ func createvxlanIface(iface *vxlanIface) error {
 	err := netlink.LinkAdd(iface.link)
 	if errors.Is(err, syscall.EEXIST) {
 		klog.Errorf("Got error: %v, %v", err, iface.link)
-		// Get the properties of existing vxlan interface
+		// Get the properties of existing vxlan interface.
 		existing, err := netlink.LinkByName(iface.link.Name)
 		if err != nil {
 			return errors.Wrap(err, "failed to retrieve link info")
@@ -534,7 +534,7 @@ func (v *vxlan) GetName() string {
 	return CableDriverName
 }
 
-// parse CIDR string and skip errors
+// Parse CIDR string and skip errors.
 func parseSubnets(subnets []string) []net.IPNet {
 	nets := make([]net.IPNet, 0, len(subnets))
 
