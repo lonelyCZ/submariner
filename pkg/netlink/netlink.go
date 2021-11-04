@@ -61,8 +61,7 @@ type Interface interface {
 
 var NewFunc func() Interface
 
-type netlinkType struct {
-}
+type netlinkType struct{}
 
 func New() Interface {
 	if NewFunc != nil {
@@ -173,5 +172,5 @@ func setSysctl(path string, contents []byte) error {
 	}
 	// Permissions are already 644, the files are never created
 	// #nosec G306
-	return os.WriteFile(path, contents, 0644)
+	return os.WriteFile(path, contents, 0o644)
 }
