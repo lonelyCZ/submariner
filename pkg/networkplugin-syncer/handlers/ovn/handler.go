@@ -71,11 +71,7 @@ func (ovn *SyncHandler) Init() error {
 		return err
 	}
 
-	if err := ovn.ensureSubmarinerInfra(); err != nil {
-		return err
-	}
-
-	return nil
+	return ovn.ensureSubmarinerInfra()
 }
 
 func (ovn *SyncHandler) LocalEndpointCreated(endpoint *submV1.Endpoint) error {
