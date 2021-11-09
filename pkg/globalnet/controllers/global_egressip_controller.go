@@ -66,13 +66,13 @@ func NewGlobalEgressIPController(config syncer.ResourceSyncerConfig, pool *ipam.
 
 	_, gvr, err := util.ToUnstructuredResource(&submarinerv1.GlobalEgressIP{}, config.RestMapper)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error converting resource")
 	}
 
 	client := config.SourceClient.Resource(*gvr).Namespace(corev1.NamespaceAll)
 	list, err := client.List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error listing the resources")
 	}
 
 	federator := federate.NewUpdateFederator(config.SourceClient, config.RestMapper, corev1.NamespaceAll)
@@ -104,7 +104,7 @@ func NewGlobalEgressIPController(config syncer.ResourceSyncerConfig, pool *ipam.
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error creating the syncer")
 	}
 
 	return controller, nil
@@ -164,6 +164,7 @@ func (c *globalEgressIPController) onCreateOrUpdate(key string, numberOfIPs int,
 		!c.createPodWatcher(key, namedIPSet, numberOfIPs, globalEgressIP)
 }
 
+// nolint:wrapcheck  // No need to wrap these errors.
 func (c *globalEgressIPController) programGlobalEgressRules(key string, allocatedIPs []string, podSelector *metav1.LabelSelector,
 	namedIPSet ipset.Named) error {
 	err := namedIPSet.Create(true)
@@ -346,6 +347,7 @@ func (c *globalEgressIPController) createPodWatcher(key string, namedIPSet ipset
 	return true
 }
 
+// nolint:wrapcheck  // No need to wrap these errors.
 func (c *globalEgressIPController) flushGlobalEgressRulesAndReleaseIPs(key, ipSetName string, numRequeues int,
 	globalEgressIP *submarinerv1.GlobalEgressIP) bool {
 	return c.flushRulesAndReleaseIPs(key, numRequeues, func(allocatedIPs []string) error {

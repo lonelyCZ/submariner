@@ -44,7 +44,7 @@ func NewServiceExportController(config syncer.ResourceSyncerConfig, podControlle
 
 	_, gvr, err := util.ToUnstructuredResource(&corev1.Service{}, config.RestMapper)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error converting resource")
 	}
 
 	controller := &serviceExportController{
@@ -66,19 +66,19 @@ func NewServiceExportController(config syncer.ResourceSyncerConfig, podControlle
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error creating the syncer")
 	}
 
 	iptIface, err := iptables.New()
 	if err != nil {
-		return nil, errors.WithMessage(err, "error creating the IPTablesInterface handler")
+		return nil, errors.Wrap(err, "error creating the IPTablesInterface handler")
 	}
 
 	controller.iptIface = iptIface
 
 	_, gvr, err = util.ToUnstructuredResource(&submarinerv1.GlobalIngressIP{}, config.RestMapper)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error converting resource")
 	}
 
 	controller.ingressIPs = config.SourceClient.Resource(*gvr).Namespace(corev1.NamespaceAll)
@@ -195,6 +195,7 @@ func (c *serviceExportController) onDelete(serviceExport *mcsv1a1.ServiceExport)
 	}, false
 }
 
+// nolint:wrapcheck  // No need to wrap errors.
 func (c *serviceExportController) getService(name, namespace string) (*corev1.Service, bool, error) {
 	obj, err := c.services.Namespace(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
