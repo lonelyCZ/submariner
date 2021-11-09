@@ -150,6 +150,7 @@ func NewDriver(localEndpoint types.SubmarinerEndpoint, localCluster types.Submar
 		ReplacePeers: true,
 		Peers:        peerConfigs,
 	}
+
 	if err = w.client.ConfigureDevice(DefaultDeviceName, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to configure WireGuard device")
 	}
@@ -278,6 +279,7 @@ func (w *wireguard) ConnectToEndpoint(endpointInfo *natdiscovery.NATEndpointInfo
 		ReplaceAllowedIPs:           true,
 		AllowedIPs:                  allowedIPs,
 	}}
+
 	err = w.client.ConfigureDevice(DefaultDeviceName, wgtypes.Config{
 		ReplacePeers: false,
 		Peers:        peerCfg,
@@ -371,6 +373,7 @@ func (w *wireguard) setWGLink() error {
 		LinkAttrs: la,
 		LinkType:  "wireguard",
 	}
+
 	if err := netlink.LinkAdd(link); err == nil {
 		w.link = link
 	} else {
@@ -426,6 +429,7 @@ func (w *wireguard) peerByKey(key *wgtypes.Key) (*wgtypes.Peer, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to find device %s", DefaultDeviceName)
 	}
+
 	for _, p := range d.Peers {
 		if p.PublicKey.String() == key.String() {
 			return &p, nil

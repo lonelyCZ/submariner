@@ -75,6 +75,7 @@ func NewNodeController(config syncer.ResourceSyncerConfig, pool *ipam.IPPool, no
 	}
 
 	controller.nodes = config.SourceClient.Resource(*gvr)
+
 	localNodeInfo, err := controller.nodes.Get(context.TODO(), controller.nodeName, metav1.GetOptions{})
 	if err != nil {
 		return nil, errors.Wrapf(err, "error retrieving local Node %q", controller.nodeName)
@@ -99,6 +100,7 @@ func (n *nodeController) process(from runtime.Object, numRequeues int, op syncer
 			}
 
 			_ = n.pool.Release(existingGlobalIP)
+
 			return n.updateNodeAnnotation(node, ""), false
 		}
 
